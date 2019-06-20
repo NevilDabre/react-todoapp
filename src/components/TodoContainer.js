@@ -2,11 +2,16 @@ import React from 'react'
 import ToDoItem from './ToDoItem'
 import axios from 'axios'
 import styled from 'styled-components'
+const apiPath = 'https://todo-app-node-server.herokuapp.com'
 
 const Label = styled.label`
     display: ${props => props.message ? 'none' : ''};
     color: red,
     font-size: 18px;
+`
+const Wrapper = styled.div`
+    display:grid;
+    grid-space: 10px;
 `
 
 class ToDoContainer extends React.Component {
@@ -35,13 +40,13 @@ class ToDoContainer extends React.Component {
             let entity = {
                 name: itemName
             }
-            let addEntity = await axios.post('http://localhost:5000/todo', entity)
+            let addEntity = await axios.post(`${apiPath}/todo`, entity)
             this.setState({
                 itemName: ''
             })
 
             if (addEntity) {
-                axios.get('http://localhost:5000/todo')
+                axios.get(`${apiPath}/todo`)
                     .then(result => {
                         this.setState({
                             ToDoItemsList: result.data ? result.data : []
@@ -66,7 +71,7 @@ class ToDoContainer extends React.Component {
             is_completed: !is_completed
         }
 
-        axios.patch(`http://localhost:5000/todo/${id}`, { item })
+        axios.patch(`${apiPath}/todo/${id}`, { item })
             .then(result => {
                 let itemsList = this.state.ToDoItemsList.map(item => {
                     if (item._id === id) item.is_completed = !item.is_completed
@@ -83,9 +88,8 @@ class ToDoContainer extends React.Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:5000/todo')
+        axios.get(`${apiPath}/todo`)
             .then(result => {
-                console.log(result);
                 this.setState({
                     ToDoItemsList: result.data ? result.data : []
                 })
@@ -102,8 +106,9 @@ class ToDoContainer extends React.Component {
         if (!ToDoItemsList)
             return <h1>There are no Items</h1>
 
-        const toDoItemsList = ToDoItemsList.map((item, i) => {
-            return <ToDoItem handleClick={this.handleClick} Item={item} key={i} />
+        const toDoItemsList = ToDoItemsList.map((item, index) => {
+            
+            return <ToDoItem handleClick={this.handleClick} index={index} Item={item} key={index} />
         })
 
         return (
@@ -112,7 +117,9 @@ class ToDoContainer extends React.Component {
                 <input name="itemName" type="text" value={this.state.itemName} onChange={this.handleChange} />
                 <Label>{this.state.message}</Label>
                 <button onClick={this.handleSubmit}>Add</button>
-                {toDoItemsList}
+                <Wrapper>
+                    {toDoItemsList}
+                </Wrapper>
             </div>
         )
     }

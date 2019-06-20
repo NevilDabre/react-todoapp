@@ -18,7 +18,8 @@ class ToDoItem extends React.Component{
     render(){
         const { name, is_completed, _id} = this.props.Item;
         return(
-            <Label status={is_completed} onClick={()=>{ this.props.handleClick(_id, is_completed)}} >{name}</Label>
+            
+            <Label status={is_completed} onClick={()=>{ this.props.handleClick(_id, is_completed)}} >{this.props.index}. {name}</Label>
         )
     }
 }
